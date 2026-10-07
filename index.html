@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Questionnaire de cadrage — Marché Facile</title>
+<style>
+:root{--g:#1f8a4c;--gd:#146336;--gl:#e8f5ee;--o:#f59e0b;--ol:#fff4dc;--t:#1f2a24;--m:#6b7a72;--b:#dfe8e2;--bg:#f6f9f7;--c:#fff}
+@media(prefers-color-scheme:dark){:root{--gl:#16301f;--ol:#3a2c0c;--t:#eef4f0;--m:#9fb0a6;--b:#2b3a31;--bg:#0f1713;--c:#18221c}}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--t);line-height:1.45}
+.wrap{max-width:640px;margin:0 auto;padding:16px 16px 40px}
+header{display:flex;align-items:center;gap:10px;padding:8px 0 14px}
+.logo{width:40px;height:40px;border-radius:12px;background:var(--g);color:#fff;display:grid;place-items:center;font-size:22px}
+header b{display:block;font-size:17px}header span{font-size:12px;color:var(--m)}
+.card{background:var(--c);border:1px solid var(--b);border-radius:18px;padding:20px;box-shadow:0 4px 18px rgba(20,99,54,.07)}
+h1{font-size:22px;margin:0 0 10px}h2{font-size:19px;margin:0 0 6px}
+p{margin:0 0 12px}.muted{color:var(--m);font-size:14px}
+.tag{display:inline-block;background:var(--ol);color:#b45309;border-radius:20px;padding:3px 10px;font-size:12px;font-weight:600;margin-bottom:10px}
+.bar{height:8px;background:var(--b);border-radius:8px;overflow:hidden;margin-bottom:6px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--g),var(--o));transition:width .3s}
+.pc{display:flex;justify-content:space-between;font-size:12px;color:var(--m);margin-bottom:12px}
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--c);color:var(--t);border:2px solid var(--b);border-radius:14px;padding:13px 14px;margin:8px 0;font-size:15.5px;cursor:pointer;min-height:52px;font-family:inherit}
+.opt:active{transform:scale(.99)}
+.opt .k{flex:none;width:22px;height:22px;border:2px solid var(--b);display:grid;place-items:center;font-size:13px;color:#fff}
+.opt .k.r{border-radius:50%}.opt .k.s{border-radius:6px}
+.opt.on{border-color:var(--g);background:var(--gl)}.opt.on .k{background:var(--g);border-color:var(--g)}
+input,textarea{width:100%;font:inherit;color:var(--t);background:var(--c);border:2px solid var(--b);border-radius:12px;padding:12px;margin-top:6px}
+input:focus,textarea:focus{outline:none;border-color:var(--g)}
+textarea{min-height:110px;resize:vertical}
+.nav{display:flex;gap:10px;margin-top:18px}
+.btn{flex:1;border:0;border-radius:14px;padding:14px;font-size:16px;font-weight:600;cursor:pointer;background:var(--g);color:#fff;font-family:inherit;min-height:50px}
+.btn.sec{background:var(--gl);color:var(--gd)}.btn.o{background:var(--o);color:#3b2a00}
+@media(prefers-color-scheme:dark){.btn.sec{color:#bfe8cf}}
+.btn:disabled{opacity:.4}
+.sum{white-space:pre-wrap;font-size:14px;background:var(--bg);border:1px solid var(--b);border-radius:12px;padding:14px;max-height:50vh;overflow:auto}
+.sec-t{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--g);margin-bottom:6px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--gd);color:#fff;padding:10px 18px;border-radius:30px;font-size:14px;opacity:0;transition:.25s;pointer-events:none}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><div class="logo">🛒</div><div><b>Marché Facile</b><span>Le marché à portée de main</span></div></header>
+<div id="app"></div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const Q=[
+{s:"Objectif",q:"Qu'est-ce que vous voulez absolument montrer au jury ?",t:"m",o:["Qu'un client peut commander facilement","Que les entrepreneurs peuvent publier leurs produits","Que l'idée est claire et utile","Que le projet est réaliste et prêt à grandir","Un vrai test avec de vrais utilisateurs"]},
+{s:"Objectif",q:"Quel est le problème n°1 que le prototype doit résoudre ?",t:"s",o:["Les entrepreneurs manquent de visibilité","Ils manquent de clients","Ils ne savent pas gérer leurs commandes","Le paiement est compliqué","La livraison est compliquée"]},
+{s:"Objectif",q:"Pour vous, à quoi ressemblerait un prototype réussi ?",t:"x",ph:"Ex : le jury voit un client commander un produit en moins d'une minute…"},
+{s:"Utilisateurs",q:"Qui utilisera Marché Facile ?",t:"m",o:["Les entrepreneurs (vendeurs)","Les clients (acheteurs)","L'équipe Marché Facile (gestion)","Les livreurs","Des partenaires (ONG, institutions…)"]},
+{s:"Entrepreneur",q:"Que doit pouvoir faire un entrepreneur ?",t:"m",o:["Créer son profil / sa boutique","Publier un produit ou service avec photo et prix","Modifier ou retirer un produit","Recevoir les commandes","Confirmer ou refuser une commande","Contacter un client","Voir l'historique de ses ventes","Voir des statistiques simples"]},
+{s:"Client",q:"Que doit pouvoir faire un client ?",t:"m",o:["Rechercher un produit","Parcourir les catégories","Voir la fiche d'un produit","Voir le profil du vendeur","Commander","Contacter le vendeur","Suivre sa commande","Laisser un avis / une note","Mettre des produits en favoris"]},
+{s:"Client",q:"Pour commander, le client doit-il créer un compte ?",t:"s",o:["Non, juste donner son nom et son téléphone","Oui, un compte est obligatoire","Les deux possibilités","Je ne sais pas"]},
+{s:"Commandes",q:"Quelles informations le client donne-t-il en commandant ?",t:"m",o:["Nom","Numéro de téléphone","Adresse / commune / quartier","Quantité","Un message pour le vendeur","Heure ou date souhaitée"]},
+{s:"Commandes",q:"Quelles étapes doit suivre une commande ?",t:"m",o:["En attente","Confirmée par le vendeur","En préparation","En livraison","Livrée","Annulée"]},
+{s:"Commandes",q:"Comment le vendeur doit-il être prévenu d'une nouvelle commande ?",t:"s",o:["Dans la plateforme uniquement","Par WhatsApp","Par SMS","Par appel","Plusieurs façons"]},
+{s:"Paiement",q:"Pour le prototype, que fait-on du paiement ?",t:"s",o:["Un vrai paiement (Mobile Money…)","Un paiement simulé pour la démonstration","Payer à la livraison, sans paiement en ligne","On le garde pour une version future"]},
+{s:"Livraison",q:"Pour le prototype, que fait-on de la livraison ?",t:"s",o:["Une vraie gestion avec livreurs et suivi","Le client donne son adresse, le vendeur s'organise","On l'affiche seulement comme étape prévue","On la garde pour une version future"]},
+{s:"Communication",q:"Comment client et vendeur doivent-ils échanger ?",t:"m",o:["Messagerie directe dans la plateforme","Appel téléphonique","WhatsApp","Simple affichage des coordonnées du vendeur"]},
+{s:"Confiance",q:"Que faire avant qu'un vendeur publie ses produits ?",t:"s",o:["Il publie tout de suite, l'équipe contrôle après","L'équipe vérifie le vendeur avant sa première publication","L'équipe valide chaque produit avant qu'il apparaisse","Je ne sais pas"]},
+{s:"Confidentialité",q:"Qui peut voir les coordonnées d'un client et le détail de sa commande ?",t:"s",o:["Seulement le vendeur concerné et l'équipe Marché Facile","Tous les vendeurs","Seulement l'équipe Marché Facile","Je ne sais pas"]},
+{s:"Confidentialité",q:"Qui peut modifier ou supprimer un produit ?",t:"s",o:["Seulement le vendeur qui l'a publié","Le vendeur et l'équipe Marché Facile","Seulement l'équipe Marché Facile"]},
+{s:"Équipe",q:"Que voulez-vous pouvoir contrôler côté équipe Marché Facile ?",t:"m",o:["La liste des entrepreneurs","Les produits publiés","Les commandes","Les clients inscrits","Des statistiques (ventes, inscrits…)","Valider ou refuser des produits","Les signalements / réclamations","Les catégories"]},
+{s:"Données",q:"Quelles informations devons-nous garder en mémoire ?",t:"m",o:["Les entrepreneurs et leurs boutiques","Les clients","Les produits","Les commandes","Les paiements","Les livraisons","L'historique des actions","Les avis"]},
+{s:"Priorités",q:"Quelles fonctions peuvent attendre une version future ?",t:"x",ph:"Ex : paiement, avis, statistiques… et dites ce qui est indispensable pour le prototype."}
+];
+const A=Q.map(()=>({sel:[],other:""}));let i=-1,name="";
+const $=s=>document.querySelector(s),app=$("#app");
+function esc(s){return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
+function intro(){app.innerHTML=`<div class="card"><span class="tag">Questionnaire de cadrage</span><h1>Questionnaire de cadrage — Marché Facile</h1>
+<p>Avant de passer à la conception du prototype, nous souhaitons mieux définir le fonctionnement de Marché Facile. Vos réponses vont nous permettre de construire une première version qui correspond réellement à votre vision.</p>
+<p class="muted">⏱️ Environ ${Math.ceil(Q.length*0.4)} minutes · ${Q.length} questions · Il n'y a pas de mauvaise réponse.</p>
+<label class="muted">Votre prénom et votre rôle dans l'équipe (optionnel)</label><input id="nm" placeholder="Ex : Marie, Marketing" value="${esc(name)}">
+<div class="nav"><button class="btn" onclick="name=$('#nm').value.trim();go(0)">Commencer →</button></div></div>`}
+function go(n){i=n;n>=Q.length?end():show()}
+function show(){const q=Q[i],a=A[i],ch=q.t!=="x";
+let h=`<div class="bar"><i style="width:${i/Q.length*100}%"></i></div><div class="pc"><span>Question ${i+1} sur ${Q.length}</span><span>${q.s}</span></div><div class="card"><h2>${q.q}</h2>`;
+if(ch){h+=`<p class="muted">${q.t==="m"?"Plusieurs choix possibles":"Un seul choix"}</p>`;
+q.o.forEach((o,k)=>{const on=a.sel.includes(k);h+=`<button class="opt ${on?"on":""}" onclick="pick(${k})"><span class="k ${q.t==="m"?"s":"r"}">${on?"✓":""}</span>${o}</button>`});
+h+=`<input id="ot" placeholder="Autre / précision (optionnel)" value="${esc(a.other)}" oninput="A[i].other=this.value">`}
+else h+=`<textarea id="ot" placeholder="${q.ph}" oninput="A[i].other=this.value">${esc(a.other)}</textarea>`;
+h+=`<div class="nav"><button class="btn sec" onclick="${i?"go(i-1)":"intro()"}">← Retour</button><button class="btn" onclick="go(i+1)">${i===Q.length-1?"Terminer ✓":"Suivant →"}</button></div></div>`;
+app.innerHTML=h;window.scrollTo(0,0)}
+function pick(k){const a=A[i].sel,q=Q[i];if(q.t==="s")A[i].sel=[k];else{const x=a.indexOf(k);x>-1?a.splice(x,1):a.push(k)}show()}
+function summary(){let t="*QUESTIONNAIRE DE CADRAGE — MARCHÉ FACILE*\n"+(name?"👤 "+name+"\n":"")+"\n",last="";
+Q.forEach((q,k)=>{if(q.s!==last){t+=`━━ ${q.s.toUpperCase()} ━━\n`;last=q.s}
+const a=A[k],r=[...a.sel.map(x=>q.o[x])];if(a.other.trim())r.push(q.t==="x"?a.other.trim():"Autre : "+a.other.trim());
+t+=`*${k+1}. ${q.q}*\n${r.length?r.map(x=>"• "+x).join("\n"):"— (pas de réponse)"}\n\n`});return t.trim()}
+function end(){const s=summary();app.innerHTML=`<div class="bar"><i style="width:100%"></i></div><div class="card"><span class="tag">Terminé 🎉</span><h2>Merci ! Vos réponses vont nous permettre de mieux définir le prototype de Marché Facile.</h2>
+<p class="muted">Relisez votre résumé, puis copiez-le et collez-le dans le groupe WhatsApp.</p><div class="sum" id="sm"></div>
+<div class="nav"><button class="btn sec" onclick="go(Q.length-1)">← Modifier</button><button class="btn o" onclick="copy()">📋 Copier mes réponses</button></div>
+<div class="nav"><a class="btn" style="text-align:center;text-decoration:none;display:block" id="wa" target="_blank" rel="noopener">Envoyer sur WhatsApp</a></div></div>`;
+$("#sm").textContent=s;$("#wa").href="https://wa.me/?text="+encodeURIComponent(s);window.scrollTo(0,0)}
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2200)}
+function copy(){const s=summary();
+const fb=()=>{const x=document.createElement("textarea");x.value=s;document.body.appendChild(x);x.select();try{document.execCommand("copy");toast("Réponses copiées ✅")}catch(e){toast("Copie impossible : sélectionnez le texte")}x.remove()};
+navigator.clipboard?navigator.clipboard.writeText(s).then(()=>toast("Réponses copiées ✅"),fb):fb()}
+intro();
+</script>
+</body>
+</html>
